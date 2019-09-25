@@ -1,0 +1,10 @@
+# SkyLabs Docker Backend Instance
+FROM node:11
+RUN mkdir /app
+WORKDIR /app
+COPY ./ /app
+RUN npm install
+RUN npm install redis
+RUN npm install -g nodemon
+EXPOSE 4000
+EXPOSE 4001

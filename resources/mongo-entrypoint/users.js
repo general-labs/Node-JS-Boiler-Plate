@@ -1,0 +1,1 @@
+[{ uid: '1', name: 'John Doe', email: 'john.doe@somewhere.com', login: '0', access: '0', picture: '0', roles: 'admin'}, { uid: '2', name: 'Abe Duel', email: 'abe.duel@msnft.com', login: '1450220977', access: '1450221160', picture: '0', roles: 'admin' }]

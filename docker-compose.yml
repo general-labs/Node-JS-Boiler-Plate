@@ -1,0 +1,73 @@
+# NODE JS BOILER PLATE docker-compose.yml
+version: '3.4'
+services:
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+      - '6379:6379/tcp'
+  skylab_db:
+    image: postgres
+    container_name: skylab_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 11111
+      POSTGRES_DB: demo_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./resources/data-dir/volume:/var/lib/postgresql/data
+      - ./resources/postgresql.conf.sample:/usr/share/postgresql/postgresql.conf.sample
+      - ./:/app
+      - ./resources/db-entrypoint:/docker-entrypoint-initdb.d
+  adminer:
+    image: adminer
+    container_name: skylab_db_admin
+    restart: always
+    ports:
+      - 8081:8080
+  ### IF MONGO DB USED INSTEAD
+  # skylab_db:
+  #   image: mongo
+  #   restart: always
+  #   container_name: skylab_db
+  #   ports:
+  #     - "27017:27017/tcp"
+  #   volumes:
+  #     - ./resources/db-notes-mongo:/data/db
+  #     - ./resources/mongo-entrypoint:/docker-entrypoint-initdb.d
+  # skylab_db_admin:
+  #   image: mongo-express
+  #   restart: always
+  #   container_name: skylab_db_admin
+  #   ports:
+  #     - "8081:8081/tcp"
+  #   environment:
+  #     ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
+  #     ME_CONFIG_BASICAUTH_USERNAME: mongo
+  #     ME_CONFIG_BASICAUTH_PASSWORD: 11111
+  #     ME_CONFIG_MONGODB_SERVER:  skylab_db
+  skylab_be:
+    container_name: skylab_be
+    depends_on:
+      - 'redis'
+    build:
+      context: .
+      dockerfile: ./resources/Dockerfile-Server
+    command: >
+      /bin/bash -c "
+        npm start
+      "
+    ports:
+      - '3000:3000/tcp'
+      - '3001:3001/tcp'
+      - '4000:4000/tcp'
+      - '4001:4001/tcp'
+    environment:
+      - NODE_ENV=development
+      - ENV_NAME=dev
+      - PORT=4000
+    volumes:
+      - ./src:/app/src
